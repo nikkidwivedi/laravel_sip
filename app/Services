@@ -1,0 +1,27 @@
+<?php
+namespace App\Services;
+
+use App\Models\Invoice;
+
+class FakeDebitApiService
+{
+    public static function process(Invoice $invoice): array
+    {
+        $success = rand(0, 1); // Random success or fail
+
+        $response = [
+            'invoice_id' => $invoice->id,
+            'status' => $success ? 'success' : 'failed',
+            'transaction_id' => 'TXN' . rand(100000, 999999),
+            'message' => $success ? 'Debit successful' : 'Debit failed',
+        ];
+
+        // Update invoice
+        $invoice->update([
+            'status' => $response['status'],
+            'debit_response' => json_encode($response),
+        ]);
+
+        return $response;
+    }
+}
